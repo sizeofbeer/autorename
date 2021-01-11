@@ -1,0 +1,10 @@
+source activate cornerNet-Lite # 激活环境
+
+# 数据库创建
+python main.py shell
+from apps import db
+db.create_all()
+quit()
+
+# 启动项目
+gunicorn -c gun.py main:app
