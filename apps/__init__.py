@@ -19,7 +19,6 @@ def create_app(object_name):
     """
     cors = CORS(app)
     app.config.from_object(object_name)
-
     db.init_app(app)
     migrate.init_app(app, db)
     from .api import create_module as api_create_module
