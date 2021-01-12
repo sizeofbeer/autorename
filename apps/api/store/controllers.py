@@ -74,15 +74,28 @@ class PicUpload(Resource):
         try:
             pass_tag, args = search_post_parser.parse_args() # strict=True, 不允许有额外参数
             if not pass_tag: # 参数验证不通过(名称、类型、数据结构)
-                return {'status': 0, 'msg': args}
+                return {'msg': args}
 
             ID = args['ID']
             machineCode = args['machineCode']
 
-            res = ClientBaseConfigure.query.filter_by(ID=ID).first() # 查询该ID状态
+            res = ClientBaseConfigure.query.filter(and_( # 查询未完成情况
+                ClientBaseConfigure.ID==ID,
+                not_(ClientBaseConfigure.ProcessState == "Finish"),
+            )).first()
+
             if not res:
-                return {'status': 0, 'msg': '该ID下无配置信息!'}
-            
+                return {'msg': '该ID下无配置信息!'}
+
+            if res.machineCode != machineCode: # 机器码不匹配
+                return {'msg': "授权码已注册!"}
+
+            if res.ProcessState == 'Waiting':
+                ClientBaseConfigure.query.filter_by(index=res.index).update({ # 更新配置
+                    'ProcessState': 'Doing',
+                })
+                db.session.commit()
+
             upload_file = request.files['file'] # 图片
             is_success, image = save_file(upload_file, res.BatchID) # 是否保存成功
             if not is_success:
@@ -126,7 +139,7 @@ class ParamConfig(Resource):
                 not_(ClientBaseConfigure.ProcessState == "Finish"),
             )).first()
             if not res:
-                return {'status': 0, 'msg': '该ID下无配置信息!'}
+                return {'status': 0, 'msg': '客户端程序异常!'}
 
             if res.ProcessState == 'Doing':
                 return {'status': 0, 'msg': '参数配置失败! 原因: 系统正在上传数据, 暂无法进行参数配置!'}
@@ -215,7 +228,7 @@ class AuthorConfig(Resource):
                     return {'msg': "授权码已注册!"}
             return {'status': 1, 'msg': "授权码注册成功!"}
         except Exception as error:
-            return {'status': 0, 'msg': str(error)}
+            return {'msg': str(error)}
 
 class UpStatusSearch(Resource):
     
