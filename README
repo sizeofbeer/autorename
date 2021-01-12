@@ -12,4 +12,4 @@ gunicorn -c gun.py main:app
 # 提交到github的master主分支
 git add .
 git commit -m "first commit"
-git pull --tags origin master
+git push -u origin master
