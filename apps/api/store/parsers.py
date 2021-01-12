@@ -1,9 +1,26 @@
 from flask_restful import reqparse
 
+author_post_parser = reqparse.RequestParser(bundle_errors=True)
+author_post_parser.add_argument(
+    'ID',
+    type=int,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+author_post_parser.add_argument(
+    'machineCode',
+    type=str,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+
+
 search_post_parser = reqparse.RequestParser(bundle_errors=True)
 search_post_parser.add_argument(
-    'IP',
-    type=str,
+    'ID',
+    type=int,
     required=True,
     nullable=False,
     location=('json', 'values')
@@ -12,8 +29,8 @@ search_post_parser.add_argument(
 
 add_post_parser = reqparse.RequestParser(bundle_errors=True)
 add_post_parser.add_argument(
-    'IP',
-    type=str,
+    'ID',
+    type=int,
     required=True,
     nullable=False,
     location=('json', 'values')

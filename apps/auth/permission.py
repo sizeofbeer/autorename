@@ -13,6 +13,7 @@ def authenticate(func):
         try:
             endpoint = request.endpoint  # 接口
             print('接口:', endpoint)
+            # return func(*args, **kwargs) # 全部通过
             if endpoint and (endpoint == 'login'):  # 如果是登录接口
                 return func(*args, **kwargs)
 

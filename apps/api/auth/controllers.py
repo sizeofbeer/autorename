@@ -1,10 +1,14 @@
 from flask_restful import Resource, fields, marshal_with
-from apps.auth.models import UserInfor, db
+from apps.auth.models import UserInfor, AuthorKey, db
 from apps.auth.permission import AuthResource
 
+key_fields = {
+    'ID': fields.Integer()
+}
 user_fields = {
     'Name': fields.String(),
     'Password': fields.String(),
+    'authorKeys': fields.List(fields.Nested(key_fields)),
     'Role': fields.String()
 }
 common_fields = {
@@ -100,12 +104,15 @@ class UserAdd(AuthResource):
             if UserInfor.query.filter_by(Name=Name).first(): # 如果该姓名已存在
                 return {'msg': "用户名已存在, 新增用户失败!"}
 
-            User = UserInfor( # 创建用户对象
+            user = UserInfor( # 创建用户对象
                 Name=Name,
                 Password=Password,
                 Role=Role,
             )
-            db.session.add(User) # 添加到数据库
+            '''可扩展(for), 为1个用户创建n个授权码 '''
+            author = AuthorKey() # 创建授权码对象
+            user.authorKeys.append(author) # 绑定授权码
+            db.session.add(user) # 添加到数据库
             db.session.commit() # 提交
             return {'status': 1, 'msg': "用户添加成功!"}
         except Exception as error:

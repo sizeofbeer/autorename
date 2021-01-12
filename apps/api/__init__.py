@@ -8,6 +8,8 @@ from .auth.controllers import (
 )
 from .store.controllers import (
     ParamConfig,
+    ClientParamConfig,
+    AuthorConfig,
     UpStatusSearch,
     PicUpload,
     ModelSelect,
@@ -29,6 +31,8 @@ def create_module(app, **kwargs):
     rest_api.add_resource(PicUpload, '/EPD/PicUpload')
     rest_api.add_resource(ModelSelect, '/EPD/ModelSelect')
     rest_api.add_resource(WarehouseSelect, '/EPD/WarehouseSelect')
+    rest_api.add_resource(AuthorConfig, '/EPD/AuthorConfig')
+    rest_api.add_resource(ClientParamConfig, '/EPD/ClientParamConfig')
     rest_api.add_resource(ParamConfig, '/EPD/ParameterConfiguration')
     rest_api.add_resource(UpStatusSearch, '/EPD/PrintAndUpStatusSearch')
     
