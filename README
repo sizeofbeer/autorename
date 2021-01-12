@@ -8,3 +8,6 @@ quit()
 
 # 启动项目
 gunicorn -c gun.py main:app
+
+# 提交到github的master主分支
+git pull --tags origin master

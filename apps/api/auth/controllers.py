@@ -75,6 +75,8 @@ class UserSearch(AuthResource):
                 return {'msg': "用户查询成功!", 'status': 1, 'columns': res_list}
             else:
                 res_list = UserInfor.query.all() # 获取所有用户信息
+                if not res_list: # 查询不到
+                    return {'msg': "数据库无数据!"}
                 return {'msg': "用户查询成功!", 'status': 1, 'columns': res_list}
         except Exception as error:
             return {'msg': str(error)}
