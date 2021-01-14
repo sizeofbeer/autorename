@@ -179,8 +179,9 @@ class ClientParamConfig(Resource): # exe程序修改配置
                     db.session.commit()
             else:
                 res = ClientBaseConfigure.query.filter_by(ID=ID).first()
+                # 下一批次
                 BatchID, SeletcDel = (res.BatchID + 1), 0
-                picname = '', 'Waiting'
+                picname = ''
                 PathTag, Wordless, deltag = True, True, True
                 BatchTime = datetime.datetime.now()
                 ClientBaseConfigure.query.filter_by(ID=ID).update({
