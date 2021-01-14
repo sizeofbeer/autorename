@@ -35,9 +35,7 @@ class PicUpload(Resource):
                 return {'msg': "ID已注册!"}
             
             PicID = 1 # 文件夹下第一张编号
-            res = PicInfor.query.order_by(PicInfor.PicID.desc())
-                .filter_by(ID=ID, MAC=MAC)
-                .first()
+            res = PicInfor.query.order_by(PicInfor.PicID.desc()).filter_by(ID=ID, MAC=MAC).first()
             
             if res: # 不是第一次使用
                 PicID = (res.PicID) + 1

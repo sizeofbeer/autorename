@@ -23,6 +23,7 @@ from .parsers import (
 class Login(AuthResource):
     returnData = {
         'status': fields.Integer(default=0),
+        'ID': fields.Integer(),
         'Name': fields.String(),
         'Role': fields.String(),
         'token': fields.String(),

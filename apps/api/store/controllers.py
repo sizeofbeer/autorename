@@ -1,14 +1,21 @@
 from flask_restful import Resource, fields, marshal_with
-import datetime
+import datetime, os
 from .parsers import search_post_parser, add_post_parser, author_post_parser
 from apps.store.models import ModelInfor, WarehouseInfor, db
 from apps.auth.models import ClientBaseConfigure
+from apps.ocr.models import PicInfor
 
 
 common_fields = {
     'status': fields.Integer(default=0),
     'msg': fields.String()
 }
+def datetime2str(x):
+    try:
+        s = x.BatchTime.strftime('%Y-%m-%d %H:%M:%S')
+    except:
+        return None
+    return s
 config_fields = {
     'ID': fields.Integer(),
     'MAC': fields.String(),
@@ -16,7 +23,7 @@ config_fields = {
     'Path': fields.String(),
     'PathTag': fields.Boolean(),
     'BatchID': fields.Integer(),
-    'BatchTime': fields.String(attribute=lambda x: x.BatchTime.strftime('%Y-%m-%d %H:%M:%S')),
+    'BatchTime': fields.String(attribute=lambda x:  datetime2str(x)),
     'Wordless': fields.Boolean(),
     'ProcessState': fields.String(),
     'YearMonth': fields.String(),
@@ -146,6 +153,14 @@ class ClientParamConfig(Resource): # exe程序修改配置
             Wordless = args['Wordless']
             picname = args['picname']
 
+            # 后期可以并行Task
+            if not res.deltag: # 删除文件及数据库
+                del_list = PicInfor.query.filter_by(ID=ID, MAC=MAC, BatchID=res.BatchID, BatchTime=res.BatchTime).all()
+                for del_file in del_list:
+                    os.remove(del_file.PicPath)
+                    db.session.delete(del_file)
+                    db.session.commit()
+
             if res.ProcessState != 'Finish':
                 if not res.Wordless: # 如果已经是白纸
                     ClientBaseConfigure.query.filter_by(ID=ID).update({
@@ -165,7 +180,7 @@ class ClientParamConfig(Resource): # exe程序修改配置
             else:
                 res = ClientBaseConfigure.query.filter_by(ID=ID).first()
                 BatchID, SeletcDel = (res.BatchID + 1), 0
-                picname, ProcessState = '', 'Waiting'
+                picname = '', 'Waiting'
                 PathTag, Wordless, deltag = True, True, True
                 BatchTime = datetime.datetime.now()
                 ClientBaseConfigure.query.filter_by(ID=ID).update({
