@@ -1,14 +1,11 @@
 from flask_restful import Resource, fields, marshal_with
-from apps.auth.models import UserInfor, AuthorKey, db
+from apps.auth.models import UserInfor, ClientBaseConfigure, db
 from apps.auth.permission import AuthResource
 
-key_fields = {
-    'ID': fields.Integer()
-}
 user_fields = {
+    'ID': fields.Integer(),
     'Name': fields.String(),
     'Password': fields.String(),
-    'authorKeys': fields.List(fields.Nested(key_fields)),
     'Role': fields.String()
 }
 common_fields = {
@@ -109,9 +106,8 @@ class UserAdd(AuthResource):
                 Password=Password,
                 Role=Role,
             )
-            '''可扩展(for), 为1个用户创建n个授权码 '''
-            author = AuthorKey() # 创建授权码对象
-            user.authorKeys.append(author) # 绑定授权码
+            config = ClientBaseConfigure() # 创建配置
+            user.Config = config # 绑定授权码
             db.session.add(user) # 添加到数据库
             db.session.commit() # 提交
             return {'status': 1, 'msg': "用户添加成功!"}

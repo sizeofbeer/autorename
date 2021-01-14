@@ -1,4 +1,84 @@
-from apps.store.models import PicInfor, PdfInfor, db
+from apps.ocr.models import PicInfor, PdfInfor, db
+from apps.auth.models import ClientBaseConfigure
+from flask_restful import Resource, fields, marshal_with
+from flask import request
+import datetime
+from apps.ocr.actions import save_file
+from .parsers import add_post_parser
+
+upload_fields = {
+    'status': fields.Integer(default=0),
+    'pic': fields.String(default=''),
+    'Wordless': fields.Boolean(default=True),
+    'msg': fields.String()
+}
+
+class PicUpload(Resource):
+    @marshal_with(upload_fields)
+    def post(self):
+        try:
+            pass_tag, args = add_post_parser.parse_args() # strict=True, 不允许有额外参数
+            if not pass_tag: # 参数验证不通过(名称、类型、数据结构)
+                return {'msg': args}
+
+            ID = args['ID']
+            MAC = args['MAC']
+            
+            if len(MAC) != 12:
+                return {'msg': "无效机器码!"}
+            res = ClientBaseConfigure.query.filter_by(ID=ID).first()
+            if not res: # 查不到ID
+                return {'msg': "无效ID!"}
+            if not res.MAC:
+                return {'msg': '该ID未绑定电脑!'}
+            if res.MAC != MAC: # 机器码不匹配
+                return {'msg': "ID已注册!"}
+            
+            PicID = 1 # 文件夹下第一张编号
+            res = PicInfor.query.order_by(PicInfor.PicID.desc())
+                .filter_by(ID=ID, MAC=MAC)
+                .first()
+            
+            if res: # 不是第一次使用
+                PicID = (res.PicID) + 1
+
+            upload_file = request.files['file'] # 图片
+            is_success, image = save_file(upload_file, MAC, PicID) # 是否保存成功
+            if not is_success:
+                return {'msg': '图片上传失败!'}
+
+            # 记录图片信息
+            PicPath = image
+            ModelPaper = args['ModelPaper']
+            BatchID = args['BatchID']
+            BatchTime = datetime.datetime.strptime(args['BatchTime'], "%Y-%m-%d %H:%M:%S")
+            ''' 需要使用OCR来判断, 目前先不做 '''
+            Wordless = True
+            YearMonth = args['BatchTime']
+            Warehouse = args['Warehouse']
+            # 创建图片信息对象, 添加到数据库
+            obj = PicInfor(
+                PicID=PicID,
+                PicPath=PicPath,
+                ID=ID,
+                MAC=MAC,
+                ModelPaper=ModelPaper,
+                BatchID=BatchID,
+                BatchTime=BatchTime,
+                Wordless=Wordless,
+                YearMonth=YearMonth,
+                Warehouse=Warehouse,
+            )
+            db.session.add(obj)
+            db.session.commit()
+
+            return {'status': 1, 'Wordless': Wordless, 'pic': str(PicID), 'msg': '图片上传成功!'}
+        except Exception as error:
+            return {'msg': str(error)}
+
+
+
+
 # # -*- coding:utf8  -*-
 # from flask_restful import Resource
 # from flask import request

@@ -9,7 +9,7 @@ author_post_parser.add_argument(
     location=('json', 'values')
 )
 author_post_parser.add_argument(
-    'machineCode',
+    'MAC',
     type=str,
     required=True,
     nullable=False,
@@ -36,7 +36,7 @@ add_post_parser.add_argument(
     location=('json', 'values')
 )
 add_post_parser.add_argument(
-    'BatchID',
+    'MAC',
     type=str,
     required=True,
     nullable=False,
@@ -44,13 +44,6 @@ add_post_parser.add_argument(
 )
 add_post_parser.add_argument(
     'ModelPaper',
-    type=str,
-    required=True,
-    nullable=False,
-    location=('json', 'values')
-)
-add_post_parser.add_argument(
-    'ProcessState',
     type=str,
     required=True,
     nullable=False,
@@ -66,6 +59,34 @@ add_post_parser.add_argument(
 add_post_parser.add_argument(
     'PathTag',
     type=bool,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+add_post_parser.add_argument(
+    'BatchID',
+    type=int,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+add_post_parser.add_argument(
+    'BatchTime',
+    type=str,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+add_post_parser.add_argument(
+    'Wordless',
+    type=bool,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+add_post_parser.add_argument(
+    'ProcessState',
+    type=str,
     required=True,
     nullable=False,
     location=('json', 'values')
@@ -92,8 +113,8 @@ add_post_parser.add_argument(
     location=('json', 'values')
 )
 add_post_parser.add_argument(
-    'Wordless',
-    type=bool,
+    'SeletcDel',
+    type=int,
     required=True,
     nullable=False,
     location=('json', 'values')

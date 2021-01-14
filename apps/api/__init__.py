@@ -11,13 +11,12 @@ from .store.controllers import (
     ClientParamConfig,
     AuthorConfig,
     UpStatusSearch,
-    PicUpload,
     ModelSelect,
     WarehouseSelect,
 )
-# from .ocr.controllers import (
-    
-# )
+from .ocr.controllers import (
+    PicUpload,
+)
 
 rest_api = Api()
 
