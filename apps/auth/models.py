@@ -16,9 +16,15 @@ class UserInfor(db.Model): # 用户信息表
     Extend3 = db.Column(db.String(255))
     Extend4 = db.Column(db.String(255))
     Extend5 = db.Column(db.String(255))
+
+    # def generate_auth_token(self, expires_in=600):
+    #     return jwt.encode(
+    #         {'Name': self.Name, 'exp': time.time() + expires_in},
+    #         app.config.get('SECRET_KEY'), algorithm='HS256')
     def generate_auth_token(self, expires_in=600):
+        print(expires_in)
         return jwt.encode(
-            {'Name': self.Name, 'exp': time.time() + expires_in},
+            {'Name': self.Name},
             app.config.get('SECRET_KEY'), algorithm='HS256')
 
     @staticmethod
@@ -37,7 +43,7 @@ class ClientBaseConfigure(db.Model): # 纸质表单配置信息表
     # __tablename__ = "client_base_configure"
     ID = db.Column(db.Integer(), db.ForeignKey('user_infor.ID'), primary_key=True) # 客户端授权码
     MAC = db.Column(db.String(12), nullable=False, default="") # 机器码
-    ModelPaper = db.Column(db.String(255), nullable=False, default="") # 纸质表单类型
+    ModelPaperCode = db.Column(db.String(255), nullable=False, default="") # 纸质表单类型
     Path = db.Column(db.String(255), nullable=False, default="") # 扫描仪存储路径
     PathTag = db.Column(db.Boolean(), nullable=False, default=True) # 扫描仪扫描件存储路径是否存在
     BatchID = db.Column(db.Integer(), nullable=False, default=1) # 批次ID
@@ -45,7 +51,7 @@ class ClientBaseConfigure(db.Model): # 纸质表单配置信息表
     Wordless = db.Column(db.Boolean(), nullable=False, default=True) # 是否白纸, True/False
     ProcessState = db.Column(db.String(255), nullable=False, default="Waiting") # 进程状态, Waiting/doing/finish
     YearMonth = db.Column(db.String(255), nullable=False, default="") # 年份-月份
-    Warehouse = db.Column(db.String(255), nullable=False, default="") # 仓库
+    WarehouseCode = db.Column(db.String(255), nullable=False, default="") # 仓库
     deltag = db.Column(db.Boolean(), nullable=False, default=True) # 删除标记
     SeletcDel = db.Column(db.Integer(), nullable=False, default=0)
     picname = db.Column(db.String(255), nullable=False, default="") # 若当前图片能读取,该项为空; 否则为图片名称

@@ -2,17 +2,6 @@ from flask_restful import Resource, fields, marshal_with
 from apps.auth.models import UserInfor, ClientBaseConfigure, db
 from apps.auth.permission import AuthResource
 
-user_fields = {
-    'ID': fields.Integer(),
-    'Name': fields.String(),
-    'Password': fields.String(),
-    'Role': fields.String()
-}
-common_fields = {
-    'status': fields.Integer(default=0),
-    'msg': fields.String()
-}
-
 from .parsers import (
     login_post_parser,
     search_post_parser, # 查询/删除
@@ -36,24 +25,30 @@ class Login(AuthResource):
             # 获取请求参数
             pass_tag, args = login_post_parser.parse_args() # strict=True, 不允许有额外参数
             if not pass_tag: # 参数验证不通过(名称、类型、数据结构)
-                return {'msg': args}
+                return {'status': 0, 'msg': args}
 
             Name = args['Name']
             Password = args['Password']
 
             res = UserInfor.query.filter_by(Name=Name, Password=Password).first() # 查询是否通过
             if not res:
-                return {'msg': "请检查用户名和密码!"}
+                return {'status': 0, 'msg': "请检查用户名和密码!"}
 
             token = res.generate_auth_token(7200) # 创建token
             token = str(token, encoding="utf8")
 
-            return {'token': token, 'Name': Name, 'Role': res.Role, 'msg': "用户登录成功!", 'status': 1}
+            return {'token': token, 'ID': res.ID, 'Name': Name, 'Role': res.Role, 'msg': "用户登录成功!", 'status': 1}
         except Exception as error:
-            return {'msg': str(error)}
+            return {'status': 0, 'msg': str(error)}
 
 # 用户查询
 class UserSearch(AuthResource):
+    user_fields = {
+        'ID': fields.Integer(),
+        'Name': fields.String(),
+        'Password': fields.String(),
+        'Role': fields.String()
+    }
     returnData = {
         'status': fields.Integer(default=0),
         'columns': fields.List(fields.Nested(user_fields)),
@@ -85,6 +80,10 @@ class UserSearch(AuthResource):
 
 # 用户添加
 class UserAdd(AuthResource):
+    common_fields = {
+        'status': fields.Integer(default=0),
+        'msg': fields.String()
+    }
     @marshal_with(common_fields)
     def post(self):
         try:
@@ -117,6 +116,10 @@ class UserAdd(AuthResource):
 
 # 用户更新
 class UserUpdate(AuthResource):
+    common_fields = {
+        'status': fields.Integer(default=0),
+        'msg': fields.String()
+    }
     @marshal_with(common_fields)
     def post(self):
         try:
@@ -143,6 +146,10 @@ class UserUpdate(AuthResource):
 
 # 用户删除
 class UserDel(AuthResource):
+    common_fields = {
+        'status': fields.Integer(default=0),
+        'msg': fields.String()
+    }
     @marshal_with(common_fields)
     def post(self):
         try:
@@ -155,10 +162,28 @@ class UserDel(AuthResource):
             res = UserInfor.query.filter_by(Name=Name).first() # 查询该用户信息
             if not res: # 查询不到
                 return {'msg': "该用户不存在!"}
-            
+            info = ClientBaseConfigure.query.filter_by(ID=res.ID).first()
+            db.session.delete(info)
             db.session.delete(res)
             db.session.commit()
 
             return {'status': 1, 'msg': "用户删除成功!"}
+        except Exception as error:
+            return {'msg': str(error)}
+
+class GetAllID(Resource):
+    returnData = {
+        'status': fields.Integer(default=0),
+        'IDs': fields.List(fields.String()),
+        'msg': fields.String()
+    }
+    @marshal_with(returnData)
+    def post(self):
+        try:
+            res_list = UserInfor.query.filter_by().all() # 查询该用户信息
+            if not res_list: # 查询不到
+                return {'msg': "未查询到ID信息!"}
+
+            return {'status': 1, 'IDs': [res.ID for res in res_list], 'msg': "用户删除成功!"}
         except Exception as error:
             return {'msg': str(error)}

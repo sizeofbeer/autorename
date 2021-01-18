@@ -43,7 +43,7 @@ add_post_parser.add_argument(
     location=('json', 'values')
 )
 add_post_parser.add_argument(
-    'ModelPaper',
+    'ModelPaperCode',
     type=str,
     required=True,
     nullable=False,
@@ -99,7 +99,7 @@ add_post_parser.add_argument(
     location=('json', 'values')
 )
 add_post_parser.add_argument(
-    'Warehouse',
+    'WarehouseCode',
     type=str,
     required=True,
     nullable=False,

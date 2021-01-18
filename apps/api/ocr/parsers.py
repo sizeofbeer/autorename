@@ -17,7 +17,7 @@ add_post_parser.add_argument(
     location=('json', 'values')
 )
 add_post_parser.add_argument(
-    'ModelPaper',
+    'ModelPaperCode',
     type=str,
     required=True,
     nullable=False,
@@ -52,8 +52,47 @@ add_post_parser.add_argument(
     location=('json', 'values')
 )
 add_post_parser.add_argument(
-    'Warehouse',
+    'WarehouseCode',
     type=str,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+
+select_post_parser = reqparse.RequestParser(bundle_errors=True)
+select_post_parser.add_argument(
+    'ID',
+    type=int,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+select_post_parser.add_argument(
+    'ModelPaperCode',
+    type=str,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+
+combin_post_parser = reqparse.RequestParser(bundle_errors=True)
+combin_post_parser.add_argument(
+    'ID',
+    type=int,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+combin_post_parser.add_argument(
+    'ModelPaperCode',
+    type=str,
+    required=True,
+    nullable=False,
+    location=('json', 'values')
+)
+combin_post_parser.add_argument(
+    'data',
+    type=list,
     required=True,
     nullable=False,
     location=('json', 'values')

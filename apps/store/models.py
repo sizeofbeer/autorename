@@ -3,7 +3,8 @@ from .. import db
 
 class WarehouseInfor(db.Model): # 仓库信息表
     # __tablename__ = "warehouse_infor"
-    Warehouse = db.Column(db.String(255), primary_key=True) # 仓库
+    WarehouseCode = db.Column(db.String(255), primary_key=True)
+    Warehouse = db.Column(db.String(255), nullable=False) # 仓库
     Extend1 = db.Column(db.String(255))
     Extend2 = db.Column(db.String(255))
     Extend3 = db.Column(db.String(255))
@@ -12,7 +13,8 @@ class WarehouseInfor(db.Model): # 仓库信息表
 
 class ModelInfor(db.Model): # 模型信息表
     # __tablename__ = "model_infor"
-    Model = db.Column(db.String(255), primary_key=True) # 仓库
+    ModelCode = db.Column(db.String(255), primary_key=True) # 仓库
+    Model = db.Column(db.String(255), nullable=False) # 仓库
     Extend1 = db.Column(db.String(255))
     Extend2 = db.Column(db.String(255))
     Extend3 = db.Column(db.String(255))
